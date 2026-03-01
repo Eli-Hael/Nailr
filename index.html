@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nailr — Grade your cold email</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f9f9f8;
+    --white: #ffffff;
+    --border: #c8c8c3;
+    --border2: #a8a8a2;
+    --text: #0a0a0a;
+    --muted: #555550;
+    --muted2: #888882;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --green-border: #bbf7d0;
+    --amber: #d97706;
+    --amber-bg: #fffbeb;
+    --amber-border: #fde68a;
+    --red: #dc2626;
+    --blue: #2563eb;
+    --radius: 10px;
+    --radius-sm: 7px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(249,249,248,0.92);
+    backdrop-filter: blur(16px);
+  }
+
+  .nav-inner {
+    width: 100%;
+    max-width: 660px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.03em;
+  }
+
+  .logo-dot { color: var(--blue); }
+
+  .nav-pill {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 100px;
+    box-shadow: var(--shadow);
+  }
+
+  /* PAGE */
+  .page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 88px 24px 80px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    max-width: 520px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .pulse-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px rgba(22,163,74,0.5);
+    animation: pulse 2s ease infinite;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  h1 .dim { color: var(--muted2); }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* CARD */
+  .card {
+    width: 100%;
+    max-width: 660px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+    animation: fadeUp 0.5s ease 0.08s both;
+  }
+
+  /* TABS */
+  .tab-row {
+    display: flex;
+    gap: 2px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 7px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.12s;
+    text-align: center;
+    letter-spacing: -0.01em;
+  }
+
+  .tab.active {
+    background: var(--white);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  .tab:not(.active):hover { color: var(--text); }
+
+  /* MODE */
+  .mode { display: none; }
+  .mode.active { display: block; }
+
+  /* FIELDS */
+  .field { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+
+  .label-row label { margin-bottom: 0; }
+
+  .hint {
+    font-size: 11px;
+    color: var(--muted2);
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  textarea,
+  select {
+    width: 100%;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.12s, box-shadow 0.12s;
+    -webkit-appearance: none;
+    box-shadow: var(--shadow);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: #a0a09a;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--muted2); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.7; }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 13px center;
+    padding-right: 34px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* UPLOAD */
+  .upload-zone {
+    border: 1.5px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 36px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.12s;
+    background: var(--bg);
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .upload-zone:hover { border-color: #a0a09a; background: #f4f4f2; }
+  .upload-zone.has-file { border-color: var(--green); border-style: solid; background: var(--green-bg); }
+  .upload-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+  .upload-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .upload-sub { font-size: 12px; color: var(--muted); }
+
+  .upload-preview { display: none; }
+  .upload-preview.active {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-top: 10px;
+  }
+
+  .preview-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 5px; border: 1px solid var(--border); }
+  .preview-name { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .preview-size { font-size: 11px; color: var(--muted); }
+
+  .remove-file {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.12s;
+  }
+
+  .remove-file:hover { border-color: var(--red); color: var(--red); }
+  .paste-hint { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.6; }
+
+  /* SUBMIT */
+  .submit-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.12s, transform 0.1s;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+
+  .btn:hover { opacity: 0.82; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.12s;
+    width: 100%;
+    margin-top: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+  .submit-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* LOADING */
+  .loading-wrap {
+    display: none;
+    text-align: center;
+    padding: 80px 24px;
+    width: 100%;
+    max-width: 660px;
+  }
+
+  .loading-wrap.active { display: block; }
+
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--border);
+    border-top-color: var(--muted);
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    margin: 0 auto 14px;
+  }
+
+  .loading-text { font-size: 13px; color: var(--muted); }
+
+  /* RESULTS */
+  .results-wrap { display: none; width: 100%; max-width: 660px; animation: fadeUp 0.4s ease both; }
+  .results-wrap.active { display: block; }
+
+  /* Score card */
+  .score-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .score-left { display: flex; align-items: baseline; gap: 8px; }
+
+  .score-big {
+    font-size: 72px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .score-big.high { color: var(--green); }
+  .score-big.mid-score { color: var(--amber); }
+  .score-big.low { color: var(--red); }
+
+  .score-denom { font-size: 18px; color: var(--muted2); font-weight: 400; align-self: flex-end; margin-bottom: 6px; }
+
+  .score-verdict {
+    font-size: 15px;
+    color: var(--muted);
+    font-style: italic;
+    max-width: 240px;
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* Dim grid */
+  .dim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .dim-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .dim-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 9px;
+  }
+
+  .dim-name {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+
+  .dim-score { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  .dim-score.high { color: var(--green); }
+  .dim-score.mid-score { color: var(--amber); }
+  .dim-score.low { color: var(--red); }
+
+  .dim-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 100px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .dim-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .dim-fill.high { background: var(--green); }
+  .dim-fill.mid-score { background: var(--amber); }
+  .dim-fill.low { background: var(--red); }
+
+  .dim-feedback { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Coaching */
+  .coaching-card {
+    display: none;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+
+  .coaching-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+  }
+
+  .coaching-text { font-size: 12px; color: #92400e; line-height: 1.7; }
+
+  /* Rewrite */
+  .rewrite-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 10px;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+
+  .rewrite-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .rewrite-subj-label { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; font-weight: 600; }
+  .rewrite-subj-val { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .rewrite-body { font-size: 13px; color: var(--text); line-height: 1.85; white-space: pre-wrap; }
+
+  .copy-btn {
+    position: absolute; top: 18px; right: 18px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 500;
+    cursor: pointer; color: var(--muted);
+    transition: all 0.12s;
+    box-shadow: var(--shadow);
+  }
+
+  .copy-btn:hover { border-color: var(--border2); color: var(--text); }
+
+  /* OVERLAYS */
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 660px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: var(--shadow-md);
+  }
+
+  .modal-title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 4px; }
+  .modal-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+
+  .modal-close {
+    position: absolute; top: 18px; right: 18px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--muted); font-size: 14px;
+    transition: all 0.12s;
+  }
+
+  .modal-close:hover { color: var(--text); border-color: var(--border2); }
+  .modal-actions { display: flex; gap: 10px; align-items: center; margin-top: 16px; }
+  .save-status { font-size: 12px; color: var(--green); display: none; }
+
+  .login-modal {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .login-error { font-size: 12px; color: var(--red); margin-top: 6px; display: none; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+  }
+
+  .footer-text { font-size: 12px; color: var(--muted2); line-height: 1.8; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 560px) {
+    .card { padding: 18px; }
+    .two-col, .dim-grid { grid-template-columns: 1fr; }
+    .score-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .score-verdict { text-align: left; max-width: 100%; }
+    h1 { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="logo">nailr<span class="logo-dot">.</span></a>
+    <span class="nav-pill">AI email grader</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="pulse-dot"></span>
+      Built for BDRs &amp; SDRs
+    </div>
+    <h1>Grade your email<br><span class="dim">before you send it.</span></h1>
+    <p class="hero-sub">Paste your cold email, warm follow-up, or expansion outreach. Nailr scores it across 7 dimensions and rewrites it — so your prospect actually replies.</p>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card" id="form-section">
+
+    <div class="two-col" style="margin-bottom:16px;">
+      <div class="field" style="margin-bottom:0;">
+        <label>Email type</label>
+        <select id="email-type">
+          <option value="cold">Cold outreach</option>
+          <option value="warm">Warm / event lead</option>
+          <option value="expansion">Existing customer expansion</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <div class="label-row">
+          <label>Send time</label>
+          <span class="hint">optional</span>
+        </div>
+        <input type="text" id="send-time" placeholder="e.g. Tuesday 8am" />
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="tab-row">
+      <button class="tab active" onclick="setMode('manual',this)">Manual fields</button>
+      <button class="tab" onclick="setMode('paste',this)">Paste everything</button>
+      <button class="tab" onclick="setMode('screenshot',this)">Screenshot</button>
+    </div>
+
+    <!-- Manual -->
+    <div class="mode active" id="mode-manual">
+      <div class="field">
+        <label>Subject line</label>
+        <input type="text" id="subject" placeholder="Your subject line" />
+      </div>
+      <div class="field">
+        <label>Email body</label>
+        <textarea id="body" placeholder="Paste your email body here..."></textarea>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <div class="label-row">
+          <label>Sender signature</label>
+          <span class="hint">name · title · company</span>
+        </div>
+        <input type="text" id="signature" placeholder="e.g. Sarah Mitchell — Data & AI Specialist, Acme Corp" />
+      </div>
+    </div>
+
+    <!-- Paste all -->
+    <div class="mode" id="mode-paste">
+      <p class="paste-hint">Paste your entire email — subject, body, and signature — all at once. Nailr extracts everything automatically.</p>
+      <div class="field" style="margin-bottom:0;">
+        <textarea id="paste-all" style="min-height:190px;" placeholder="Subject: Quick question&#10;&#10;Hi James,&#10;&#10;Acme's analytics team is already working with us on the Qlik side...&#10;&#10;Worth a quick chat Thursday?&#10;&#10;Sarah Mitchell&#10;Data & AI Specialist, TechCorp"></textarea>
+      </div>
+    </div>
+
+    <!-- Screenshot -->
+    <div class="mode" id="mode-screenshot">
+      <p class="paste-hint">Upload a screenshot of your email. Nailr reads it and grades it automatically.</p>
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" class="upload-input" id="screenshot-input" accept="image/*" onchange="handleFile(this)" />
+        <span class="upload-icon">📎</span>
+        <div class="upload-title">Drop your screenshot here</div>
+        <div class="upload-sub">or click to browse — PNG, JPG supported</div>
+      </div>
+      <div class="upload-preview" id="upload-preview">
+        <img class="preview-thumb" id="preview-thumb" src="" alt="" />
+        <div>
+          <div class="preview-name" id="preview-name"></div>
+          <div class="preview-size" id="preview-size"></div>
+        </div>
+        <button class="remove-file" onclick="removeFile()">Remove</button>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn" id="grade-btn" onclick="gradeEmail()">Grade this email</button>
+      <span class="submit-note">Scored across 7 dimensions<br>Includes a full rewrite</span>
+    </div>
+
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Analysing your email...</div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-wrap" id="results">
+
+    <div class="score-card">
+      <div class="score-left">
+        <div class="score-big" id="overall-num">—</div>
+        <div class="score-denom">/10</div>
+      </div>
+      <div class="score-verdict" id="score-verdict"></div>
+    </div>
+
+    <div class="dim-grid" id="dim-grid"></div>
+
+    <div class="coaching-card" id="coaching-card">
+      <div class="coaching-label">Coaching note</div>
+      <div class="coaching-text" id="coaching-text"></div>
+    </div>
+
+    <div class="rewrite-card">
+      <div class="rewrite-label">Suggested rewrite</div>
+      <button class="copy-btn" onclick="copyRewrite()">Copy</button>
+      <div class="rewrite-subj-label">Subject</div>
+      <div class="rewrite-subj-val" id="rewrite-subject"></div>
+      <div class="rewrite-body" id="rewrite-body"></div>
+    </div>
+
+    <button class="btn-ghost" onclick="resetForm()">↩ Grade another email</button>
+
+  </div>
+
+</div>
+
+<footer>
+  <p class="footer-text">nailr.io — Built for sales teams who want replies<br>Nothing is stored. Every email is processed securely.</p>
+</footer>
+
+<!-- ADMIN LOGIN -->
+<div class="overlay" id="admin-login">
+  <div class="login-modal">
+    <div class="modal-title" style="margin-bottom:4px;">Admin access</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">Enter your password to edit the scoring prompt.</div>
+    <input type="password" id="admin-password" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()" style="margin-bottom:6px;" />
+    <div class="login-error" id="login-error">Incorrect password.</div>
+    <button class="btn" style="margin-top:12px;width:100%;" onclick="checkPw()">Enter</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="overlay" id="admin-panel">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAdmin()">✕</button>
+    <div class="modal-title">Prompt editor</div>
+    <div class="modal-sub">Edit the AI scoring rubric. Changes apply immediately to all new submissions.</div>
+    <div class="field">
+      <label>System prompt</label>
+      <textarea id="admin-prompt" style="min-height:320px;font-size:12px;line-height:1.6;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="savePrompt()">Save changes</button>
+      <button class="btn-ghost" style="width:auto;margin-top:0;" onclick="resetPrompt()">Reset to default</button>
+      <span class="save-status" id="save-status">Saved ✓</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PW = "Reichlin1996!";
+const API = "https://api.anthropic.com/v1/messages";
+
+const DEFAULT_PROMPT = `You are Nailr, an expert sales email coach with 15+ years training BDRs and SDRs at top tech companies. You give brutally honest, specific, actionable feedback.
+
+You evaluate emails against a proven rubric built for modern B2B outreach. Your feedback should feel like a senior sales coach reviewing the email — not a generic AI.
+
+## SCORING RUBRIC
+
+Score each dimension 1-10. Be honest and strict. A 7 means genuinely good. A 10 is rare.
+
+### 1. Subject Line (1-10)
+- 6 words or fewer, reads like an internal email
+- No exclamation marks, ALL CAPS, or emojis
+- Creates mild curiosity, does NOT give the whole game away
+- Penalise heavily for: newsletter feel, product names in subject
+
+### 2. First Sentence (1-10)
+- Earns the second sentence immediately
+- No "I hope this finds you well", "My name is X", "I work at Y"
+- Specific to this recipient — company, role, industry, or relevant event
+- Penalise for: self-introduction, generic openers
+
+### 3. Body & Tone (1-10)
+- Under 100 words, one idea, one ask
+- Written like a human — no bullet points, no hyperlinks, no Calendly links
+- Conversational, not corporate
+- Penalise for: walls of text, multiple topics, formal language
+
+### 4. FOMO & Social Proof (1-10)
+- References a recognisable peer company in recipient's industry
+- Includes a specific measurable outcome (%, time saved, cost reduced)
+- Creates tension — implies the prospect might be missing something
+- Name only without a stat = maximum 5/10
+
+### 5. CTA Strength (1-10)
+- One single clear ask, specific and assumptive
+- Easy to say yes ("15 minutes Thursday?" not "let me know if interested")
+- No Calendly links, no weak hedging language
+- Penalise for: multiple asks, vague CTAs, apologetic language
+
+### 6. Personalisation Accuracy (1-10)
+- Accurate and specific to THIS recipient — correct team, dept, role
+- For expansion emails: correctly identifies which team is already a customer
+- Feels researched, not template-filled
+
+### 7. Signature & Send Time (1-10)
+- Title does NOT contain: Business Development, Sales, SDR, BDR, Account Executive, Demand Centre
+- Title is consultative/technical (e.g. "Data & AI Specialist")
+- For expansion emails: use "[Company Name] Account Team"
+- Sent Tuesday-Thursday at 7-9am OR 4-6pm recipient local time
+- If send time not provided, cap at 7/10
+
+## RESPONSE FORMAT
+
+Respond ONLY with valid JSON. No markdown, no preamble:
+
+{
+  "overall": 7,
+  "verdict": "Short 6-8 word verdict as if you're the prospect",
+  "dimensions": [
+    { "name": "Subject Line", "score": 7, "feedback": "2-3 sentence specific feedback" },
+    { "name": "First Sentence", "score": 5, "feedback": "2-3 sentence specific feedback" },
+    { "name": "Body & Tone", "score": 6, "feedback": "2-3 sentence specific feedback" },
+    { "name": "FOMO & Social Proof", "score": 4, "feedback": "2-3 sentence specific feedback" },
+    { "name": "CTA Strength", "score": 6, "feedback": "2-3 sentence specific feedback" },
+    { "name": "Personalisation", "score": 7, "feedback": "2-3 sentence specific feedback" },
+    { "name": "Signature & Timing", "score": 5, "feedback": "2-3 sentence specific feedback" }
+  ],
+  "coaching_note": "2-3 sentence pattern-based coaching note, or empty string if none",
+  "rewrite": {
+    "subject": "Rewritten subject line",
+    "body": "Full rewritten email. Under 80 words. Human tone. No hyperlinks. Single CTA question at end. Sender name at bottom."
+  }
+}`;
+
+let currentPrompt = localStorage.getItem('nailr_prompt') || DEFAULT_PROMPT;
+let currentMode = 'manual';
+let imgBase64 = null;
+let imgType = null;
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') showLogin();
+});
+
+if (window.location.pathname === '/admin') showLogin();
+
+function showLogin() {
+  document.getElementById('admin-login').classList.add('open');
+  setTimeout(() => document.getElementById('admin-password').focus(), 100);
+}
+
+function checkPw() {
+  const pw = document.getElementById('admin-password').value;
+  if (pw === ADMIN_PW) {
+    document.getElementById('admin-login').classList.remove('open');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('admin-prompt').value = currentPrompt;
+    document.getElementById('admin-panel').classList.add('open');
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function closeAdmin() { document.getElementById('admin-panel').classList.remove('open'); }
+
+function savePrompt() {
+  currentPrompt = document.getElementById('admin-prompt').value;
+  localStorage.setItem('nailr_prompt', currentPrompt);
+  const s = document.getElementById('save-status');
+  s.style.display = 'inline';
+  setTimeout(() => s.style.display = 'none', 2000);
+}
+
+function resetPrompt() {
+  if (!confirm('Reset to default prompt?')) return;
+  currentPrompt = DEFAULT_PROMPT;
+  document.getElementById('admin-prompt').value = DEFAULT_PROMPT;
+  localStorage.removeItem('nailr_prompt');
+}
+
+function setMode(mode, btn) {
+  currentMode = mode;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mode').forEach(m => m.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mode-' + mode).classList.add('active');
+}
+
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const r = e.target.result;
+    imgBase64 = r.split(',')[1];
+    imgType = file.type;
+    document.getElementById('upload-zone').classList.add('has-file');
+    document.getElementById('preview-thumb').src = r;
+    document.getElementById('preview-name').textContent = file.name;
+    document.getElementById('preview-size').textContent = (file.size/1024).toFixed(0) + ' KB';
+    document.getElementById('upload-preview').classList.add('active');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeFile() {
+  imgBase64 = null; imgType = null;
+  document.getElementById('screenshot-input').value = '';
+  document.getElementById('upload-zone').classList.remove('has-file');
+  document.getElementById('upload-preview').classList.remove('active');
+  document.getElementById('preview-thumb').src = '';
+}
+
+function cls(s) { return s >= 7 ? 'high' : s >= 5 ? 'mid-score' : 'low'; }
+
+async function gradeEmail() {
+  const emailType = document.getElementById('email-type').value;
+  const sendTime = document.getElementById('send-time').value.trim();
+  const btn = document.getElementById('grade-btn');
+  let messages = [];
+
+  if (currentMode === 'manual') {
+    const subject = document.getElementById('subject').value.trim();
+    const body = document.getElementById('body').value.trim();
+    const sig = document.getElementById('signature').value.trim();
+    if (!subject && !body) { alert('Please enter a subject line and email body.'); return; }
+    messages = [{ role: 'user', content: `Grade this email:\n\nEMAIL TYPE: ${emailType}\nSUBJECT: ${subject||'(none)'}\nBODY: ${body||'(none)'}\nSIGNATURE: ${sig||'(none)'}\nSEND TIME: ${sendTime||'not provided'}` }];
+  } else if (currentMode === 'paste') {
+    const raw = document.getElementById('paste-all').value.trim();
+    if (!raw) { alert('Please paste your email first.'); return; }
+    messages = [{ role: 'user', content: `Grade this email. Type: ${emailType}. Send time: ${sendTime||'not provided'}.\n\nFull email (extract subject, body and signature yourself):\n\n${raw}` }];
+  } else {
+    if (!imgBase64) { alert('Please upload a screenshot first.'); return; }
+    messages = [{ role: 'user', content: [
+      { type: 'image', source: { type: 'base64', media_type: imgType, data: imgBase64 } },
+      { type: 'text', text: `Grade the email in this screenshot. Type: ${emailType}. Send time: ${sendTime||'not provided'}. Extract subject, body and signature yourself.` }
+    ]}];
+  }
+
+  document.getElementById('form-section').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('results').classList.remove('active');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: currentPrompt, messages })
+    });
+    const data = await res.json();
+    const text = data.content.find(b => b.type === 'text')?.text || '{}';
+    const result = JSON.parse(text.replace(/```json|```/g,'').trim());
+    renderResults(result);
+  } catch(err) {
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('form-section').style.display = 'block';
+    alert('Something went wrong. Please try again.');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function renderResults(r) {
+  document.getElementById('loading').classList.remove('active');
+  const c = cls(r.overall);
+  const el = document.getElementById('overall-num');
+  el.textContent = r.overall;
+  el.className = 'score-big ' + c;
+  document.getElementById('score-verdict').textContent = r.verdict || '';
+
+  const grid = document.getElementById('dim-grid');
+  grid.innerHTML = '';
+  (r.dimensions||[]).forEach(d => {
+    const dc = cls(d.score);
+    grid.innerHTML += `<div class="dim-card">
+      <div class="dim-top"><span class="dim-name">${d.name}</span><span class="dim-score ${dc}">${d.score}</span></div>
+      <div class="dim-bar"><div class="dim-fill ${dc}" style="width:${d.score*10}%"></div></div>
+      <div class="dim-feedback">${d.feedback}</div>
+    </div>`;
+  });
+
+  const cc = document.getElementById('coaching-card');
+  if (r.coaching_note) {
+    document.getElementById('coaching-text').textContent = r.coaching_note;
+    cc.style.display = 'block';
+  } else {
+    cc.style.display = 'none';
+  }
+
+  document.getElementById('rewrite-subject').textContent = r.rewrite?.subject || '';
+  document.getElementById('rewrite-body').textContent = r.rewrite?.body || '';
+  document.getElementById('results').classList.add('active');
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyRewrite() {
+  const s = document.getElementById('rewrite-subject').textContent;
+  const b = document.getElementById('rewrite-body').textContent;
+  navigator.clipboard.writeText(`Subject: ${s}\n\n${b}`).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function resetForm() {
+  document.getElementById('results').classList.remove('active');
+  document.getElementById('form-section').style.display = 'block';
+  ['subject','body','signature','send-time','paste-all'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  removeFile();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
