@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nailr — Grade your cold email</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231a1a1a'/><text x='50%25' y='50%25' dominant-baseline='central' text-anchor='middle' font-family='Inter,sans-serif' font-weight='600' font-size='18' fill='white'>N</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -630,7 +631,7 @@
 
 <nav>
   <div class="nav-inner">
-    <a href="/" class="logo">nailr<span class="logo-dot">.</span></a>
+    <a href="/" class="logo" onclick="if(document.getElementById('results').classList.contains('active')){resetForm();return false;}">nailr<span class="logo-dot">.</span></a>
     <span class="nav-pill">AI email grader</span>
   </div>
 </nav>
